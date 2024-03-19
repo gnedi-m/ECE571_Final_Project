@@ -39,7 +39,7 @@ while instantiating the 8088 model provided. This task aims to integrate the pro
 
 - [Nivedita Nadimpalli](nivenadi@pdx.edu): Description of their contribution.
 - [Nick Allmeyer](nall2@pdx.edu): Description of their contribution.
-- [Mohammed Gnedi](gnedi@pdx.edu): Description of their contribution.
+- [Mohamed Gnedi](gnedi@pdx.edu): Description of their contribution.
 
 ## Tool
 
