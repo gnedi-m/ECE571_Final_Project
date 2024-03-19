@@ -1,0 +1,119 @@
+/*
+Nick Allmeyer
+Mohammed Gnedi
+Nivedita Nadimpalli
+
+Final Project top level module
+ECE 571
+Winter 2024
+*/
+
+/*Top level module*/
+module FinalProjectTop;
+
+/*From 8088 top module*/
+/*CLK and RESET are inputs into the interface*/
+bit CLK = '0;
+bit RESET = '0;
+
+/*Instantiate the interface*/
+Intel8088Pins intrF(CLK, RESET);
+
+logic [19:0] Address;
+wire [7:0]  Data;
+
+/*Instantiate the 8088*/
+Intel8088 P(intrF.Processor);
+
+// 8282 Latch to latch bus address
+always_latch
+begin
+if (intrF.ALE)
+	Address <= {intrF.A, intrF.AD};
+end
+
+// 8286 transceiver
+assign Data =  (intrF.DTR & ~intrF.DEN) ? intrF.AD   : 'z;
+assign intrF.AD   = (~intrF.DTR & ~intrF.DEN) ? Data : 'z;
+
+
+/*Generating Chip Select*/
+/************************/
+logic CS0, CS1, CS2, CS3;
+/*
+CS0 corresponds to the memory with lower address range: 0x00000 to 0x7FFFF
+CS1 corresponds to the memory with upper address range: 0x80000 to 0xFFFFF
+CS2 corresponds to the IO with the lower address range: 0x01C00 to 0x01DFF
+CS3 corresponds to the IO with the upper address range: 0x0FF00 to 0x0FF0F
+*/
+assign CS0 = (!intrF.IOM && !Address[19]);
+assign CS1 = (!intrF.IOM && Address[19]);
+assign CS2 = (intrF.IOM && Address[15:9] == 7'h0E);
+assign CS3 = (intrF.IOM && Address[15:4] == 12'hFF0);
+/************************/
+
+
+/*Instantiating Memories and IOs*/
+IOMEM #(19, "LOWMEM.txt")	lowMEM(intrF.Peripheral, CS0, Address, Data);	//0x00000 to 0x7FFFF
+IOMEM #(19, "UPPMEM.txt")	uppMEM(intrF.Peripheral, CS1, Address, Data);	//0x80000 to 0xFFFFF
+IOMEM #(9, "LOWIO.txt")		lowIO(intrF.Peripheral, CS2, Address, Data);	//0x01C00 to 0x01DFF
+IOMEM #(4, "UPPIO.txt")		uppIO(intrF.Peripheral, CS3, Address, Data);	//0x0FF00 to 0x0FF0F
+
+/*From 8088 top module*/
+/**********************/
+always #50 CLK = ~CLK;
+
+initial
+begin
+$dumpfile("dump.vcd"); $dumpvars;
+
+repeat (2) @(posedge CLK);
+RESET = '1;
+repeat (5) @(posedge CLK);
+RESET = '0;
+
+repeat(10000) @(posedge CLK);
+$finish();
+end
+/**********************/
+
+
+
+/*Interface definition*/
+interface Intel8088Pins(input logic CLK, RESET);
+logic MNMX ='1;
+logic TEST = '1;
+logic READY = '1;
+logic NMI ='0;
+logic INTR = '0;
+logic HOLD = '0;
+tri [7:0] AD;
+tri [19:8] A;
+logic HLDA;
+logic IOM;
+logic WR;
+logic RD;
+logic SSO;
+logic INTA;
+logic ALE;
+logic DTR;
+logic DEN;
+
+/*Processor modport*/
+modport Processor(	input CLK, RESET,
+					input MNMX, TEST, READY, NMI, INTR, HOLD,
+					inout AD,
+					output A, HLDA, IOM, WR, RD, SSO, INTA, ALE, DTR, DEN);
+					
+/*Peripheral modport*/
+modport Peripheral(	input CLK, RESET,
+					input ALE, RD, WR);
+
+endinterface
+/**********************/
+
+
+
+
+endmodule
+

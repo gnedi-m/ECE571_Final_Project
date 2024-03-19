@@ -1,0 +1,17 @@
+/*Our busops*/
+100	M	R	0x00000
+110	M	W	0x00000
+120	I	R	0x01C01
+130	I	W	0x01C01
+140	M	R	0x80002
+150	M	W	0x80002
+160	I	R	0x0FF03
+170	I	W	0x0FF03
+
+/*Professor Faust's busops*/
+/*All I/O operations don't meet the expected I/O ports as defined in checkpoint 2*/
+100	M	R	0xFFFFF
+200	M	W	0x33333
+300	I	R	0x1F00F
+400	I	W	0x200F0
+401	I	R	0x300FF
