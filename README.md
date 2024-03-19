@@ -37,9 +37,9 @@ while instantiating the 8088 model provided. This task aims to integrate the pro
 
 ## Team Members
 
-- [Nivedita Nadimpalli](nivenadi@pdx.edu): Description of their contribution.
-- [Nick Allmeyer](nall2@pdx.edu): Description of their contribution.
-- [Mohamed Gnedi](gnedi@pdx.edu): Description of their contribution.
+- [Nivedita Nadimpalli](nivenadi@pdx.edu): Lead on the creation of the block diagram and FSM. (Powerpoint slides)
+- [Nick Allmeyer](nall2@pdx.edu): Lead on chip select implementation, address register, and tri-state communication between the storage array and data bus. (Main project simulation and debugging)
+- [Mohamed Gnedi](gnedi@pdx.edu): Lead on interface creation and implementation. (Github repo)
 
 ## Tool
 
